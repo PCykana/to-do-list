@@ -3,6 +3,7 @@ const readline = require('readline')
 
 //import fs (file system) module for reading/writing files
 const fs = require('fs')
+const { markAsUntransferable } = require('worker_threads')
 
 //NOTE - define the file where tasks will be saved
 
@@ -88,5 +89,48 @@ function listTasks() {
             console.log(`${idx + 1}. (${status}) ${task.text}`) // print task number, status, and description
         })
     }
-    showMenu() // show menu again after listing tasks
+    return showMenu() // show menu again after listing tasks
+}
+
+//NOTE - function to add a new task to the list
+function addTask() {
+    rl.question('\nEnter the task: ', (task) => { //Prompt user to enter the task description
+        if(task.trim() === ''){ // if input is empty or only spaces
+            console.log('Task cannot be empty.') //show error message
+        }else {
+            todos.push({text: task, done: false}) // add new task object
+            saveTasks()                           // save updated tasks to file
+            console.log('Task added!')            // confirm addition
+        }
+        return showMenu()                                //show menu again
+    })
+}
+
+//NOTE - function to prompt the user to select a task to mark as completed
+function promptMarkTaskAsDone() {
+    if(todos.length === 0){                        // if there are no tasks
+        console.log('\nNo tasks to mark as done.') // show error message
+        return showMenu()
+    }
+    console.log('\nSelect the number of the task to mark as completed.') //print prompt header
+    todos.forEach((task, idx) =>{                                        // list all tasks with their header
+        const status = task.done ? 'Completed' : 'Not Completed'         // status as text
+        console.log(`${idx + 1}. (${status}) ${task.text}`)   //Print each task
+    })
+    rl.question('\nTask Number: ', (num) =>{ // prompt for task number
+        MarkTaskAsDone(num)                  //pass input to markTaskasDone function
+    })
+}
+
+//NOTE - function to mark the selected task as completed
+function MarkTaskAsDone(num) {
+    let idx = parseInt(num - 1) // convert user input to array index
+    if (todos[idx]) {           // if a task exists at that index
+        todos[idx].done = true  // mark the task as completed
+        saveTasks()             // save changes to file
+        console.log('Task marked as completed!') // confirm completion
+    }else {
+        console.log('Invalid task number.') // if input invalid show error
+    }
+    showMenu()                  // show menu again
 }
