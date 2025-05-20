@@ -69,6 +69,7 @@ function handleMenu(choice) {
             console.log('Goodbye!') // if '5' print good bye and close the app
             rl.close // close readline interface
             break
+
         default:
             console.log('Invalid choice. Try Again.') // if not 1-5, show error message
             showMenu()                                // show menu again
@@ -76,3 +77,16 @@ function handleMenu(choice) {
     }
 } 
 
+//NOTE - function to display all tasks in the list
+function listTasks() {
+    console.log('\nYour To-Do List:')   // print list header
+    if(todos.length === 0){             // if there are no tasks
+        console.log('No tasks found')   // inform user that list is empty
+    }else {                             // if there are tasks
+        todos.forEach((task, idx) => {  // for each in the array
+            const status = task.done ? 'Complete': 'Not Complete' // Determine status Task
+            console.log(`${idx + 1}. (${status}) ${task.text}`) // print task number, status, and description
+        })
+    }
+    showMenu() // show menu again after listing tasks
+}
