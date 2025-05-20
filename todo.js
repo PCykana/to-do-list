@@ -4,6 +4,7 @@ const readline = require('readline')
 //import fs (file system) module for reading/writing files
 const fs = require('fs')
 const { markAsUntransferable } = require('worker_threads')
+const { notEqual } = require('assert')
 
 //NOTE - define the file where tasks will be saved
 
@@ -85,7 +86,7 @@ function listTasks() {
         console.log('No tasks found')   // inform user that list is empty
     }else {                             // if there are tasks
         todos.forEach((task, idx) => {  // for each in the array
-            const status = task.done ? 'Complete': 'Not Complete' // Determine status Task
+            const status = task.done ? 'Completed': 'Not Completed' // Determine status Task
             console.log(`${idx + 1}. (${status}) ${task.text}`) // print task number, status, and description
         })
     }
@@ -102,7 +103,7 @@ function addTask() {
             saveTasks()                           // save updated tasks to file
             console.log('Task added!')            // confirm addition
         }
-        return showMenu()                                //show menu again
+        showMenu()                                //show menu again
     })
 }
 
@@ -118,12 +119,12 @@ function promptMarkTaskAsDone() {
         console.log(`${idx + 1}. (${status}) ${task.text}`)   //Print each task
     })
     rl.question('\nTask Number: ', (num) =>{ // prompt for task number
-        MarkTaskAsDone(num)                  //pass input to markTaskasDone function
+        markTaskAsDone(num)                  //pass input to markTaskasDone function
     })
 }
 
 //NOTE - function to mark the selected task as completed
-function MarkTaskAsDone(num) {
+function markTaskAsDone(num) {
     let idx = parseInt(num - 1) // convert user input to array index
     if (todos[idx]) {           // if a task exists at that index
         todos[idx].done = true  // mark the task as completed
@@ -134,3 +135,35 @@ function MarkTaskAsDone(num) {
     }
     showMenu()                  // show menu again
 }
+
+//NOTE - function to prompt user to select a task to delete
+function promptDeleteTask() {
+    if(todos.length === 0){  // if there are no tasks
+        console.log('\nNo tasks to delete.') //inform user 
+        return showMenu() // show menu and exit function
+    }
+    console.log('\nSelect the number of the task to delete:') // primpt prompt header
+    todos.forEach((task, idx) => {                            // list all tasks with their numbers
+        const status = task.done ? 'Completed' : 'Not Completed'
+        console.log(`${idx + 1}. (${status}) ${task.text}`) // print each task
+    })
+    rl.question('\nTask number: ', (num) => {  // prompt for task number
+        deleteTask(num)                           // pass input to delete task function
+    })
+}
+
+//NOTE - function to delete the selected task
+function deleteTask(num){
+    let idx = parseInt(num) - 1
+    if (todos{idx}) {
+        todos.splice(idx, 1)
+        saveTasks()
+        console.log('Task is deleted!')        
+    }else {
+        console.log('Invalid task number.')
+    }
+    showMenu()
+}
+
+// starttask to show the main men
+showMenu()
